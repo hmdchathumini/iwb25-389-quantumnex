@@ -1,0 +1,6 @@
+type User record {
+    int id;
+    string name;
+    string email;
+    string password;
+};

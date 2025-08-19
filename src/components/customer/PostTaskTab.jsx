@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
-const PostTaskTab = () => {
+const PostTaskTab = ({ setTasks }) => {
   const [task, setTask] = useState({
     title: "",
     description: "",
@@ -32,9 +32,36 @@ const PostTaskTab = () => {
       return;
     }
 
-    console.log("Task Posted:", task);
-    setSnackbar({ open: true, message: "Task posted successfully!", severity: "success" });
-    setTask({ title: "", description: "", budget: "", date: "" });
+    // Add to local state immediately
+    setTasks(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        title: task.title,
+        price: Number(task.budget),
+        status: "Pending",
+      }
+    ]);
+
+    // Optionally, also send to backend
+    fetch('http://localhost:8080/tasks/createTask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: task.title,
+        description: task.description,
+        budget: task.budget,
+        date: task.date
+      })
+    })
+    .then(res => res.text())
+    .then(data => {
+      setSnackbar({ open: true, message: "Task posted successfully!", severity: "success" });
+      setTask({ title: "", description: "", budget: "", date: "" });
+    })
+    .catch(err => {
+      setSnackbar({ open: true, message: "Failed to post task!", severity: "error" });
+    });
   };
 
   return (

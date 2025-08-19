@@ -1,0 +1,31 @@
+[package]
+org = "your_org_name"
+name = "ballerina_backend"
+version = "0.1.0"
+
+[build-options]
+skip-tests = false
+
+[[dependency]]
+org = "ballerina"
+name = "http"
+version = "1.0.0"
+
+[[dependency]]
+org = "ballerina"
+name = "log"
+version = "1.0.0"
+
+[[dependency]]
+org = "ballerina"
+name = "sql"
+version = "1.0.0"
+
+[[dependency]]
+org = "ballerina"
+name = "jwt"
+version = "1.0.0"
+
+[project]
+org-name = "worknest"
+version = "0.1.0"

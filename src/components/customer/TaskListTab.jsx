@@ -16,14 +16,7 @@ import {
   Stack
 } from "@mui/material";
 
-const DUMMY_TASKS = [
-  { id: 1, title: "Clean my garden", price: 2000, status: "Pending" },
-  { id: 2, title: "Paint the house", price: 5000, status: "Completed" },
-  { id: 3, title: "Fix the leaky faucet", price: 1500, status: "In Progress" },
-];
-
-const TaskListTab = () => {
-  const [tasks, setTasks] = useState([]);
+const TaskListTab = ({ tasks, setTasks }) => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("All");
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -31,7 +24,6 @@ const TaskListTab = () => {
   useEffect(() => {
     // simulate API call
     setTimeout(() => {
-      setTasks(DUMMY_TASKS);
       setLoading(false);
     }, 1000);
   }, []);

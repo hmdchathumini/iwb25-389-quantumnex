@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 function Home() {
+  const navigate = useNavigate(); // Initialize the hook
+
   return (
     <div style={{ fontFamily: "Arial, sans-serif", backgroundColor: "#fefefe" }}>
       {/* Hero Section with Scrolling Background */}
@@ -107,16 +110,21 @@ function Home() {
         <p style={{ fontSize: "18px", maxWidth: "700px", margin: "0 auto 30px" }}>
           Join WorkNest today and find the right professional for any task, anytime.
         </p>
-        <button style={{
-          padding: "12px 30px",
-          fontSize: "18px",
-          borderRadius: "25px",
-          border: "none",
-          backgroundColor: "#32CD32",
-          color: "white",
-          cursor: "pointer",
-          fontWeight: "bold"
-        }}>Sign Up Now</button>
+        <button
+          style={{
+            padding: "12px 30px",
+            fontSize: "18px",
+            borderRadius: "25px",
+            border: "none",
+            backgroundColor: "#32CD32",
+            color: "white",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+          onClick={() => navigate("/register")} // Add this handler
+        >
+          Sign Up Now
+        </button>
       </section>
     </div>
   );

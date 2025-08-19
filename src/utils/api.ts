@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.example.com'; // Replace with your actual API base URL
+const API_BASE_URL = 'http://localhost:8080';
 
 // Utility function to handle API requests
 const apiRequest = async (endpoint, method = 'GET', data = null) => {
@@ -11,49 +11,62 @@ const apiRequest = async (endpoint, method = 'GET', data = null) => {
             data,
             headers: {
                 'Content-Type': 'application/json',
-                // Add any other headers you need, like Authorization
             },
         });
         return response.data;
     } catch (error) {
         console.error('API request error:', error);
-        throw error; // Rethrow the error for further handling
+        throw error;
     }
 };
 
 // User authentication
 export const registerUser = async (userData) => {
-    return await apiRequest('/register', 'POST', userData);
+    return await apiRequest('/users/createUser', 'POST', userData);
 };
 
-export const loginUser = async (credentials) => {
-    return await apiRequest('/login', 'POST', credentials);
+export const getUser = async (id) => {
+    return await apiRequest(`/users/getUser/${id}`, 'GET');
+};
+
+export const deleteUser = async (id) => {
+    return await apiRequest(`/users/deleteUser/${id}`, 'DELETE');
 };
 
 // Task management
 export const postTask = async (taskData) => {
-    return await apiRequest('/tasks', 'POST', taskData);
+    return await apiRequest('/tasks/createTask', 'POST', taskData);
 };
 
-export const getNearbyWorkers = async (location) => {
-    return await apiRequest(`/workers/nearby?location=${location}`);
+export const getTask = async (id) => {
+    return await apiRequest(`/tasks/getTask/${id}`, 'GET');
 };
 
-export const getTasks = async () => {
-    return await apiRequest('/tasks');
+export const deleteTask = async (id) => {
+    return await apiRequest(`/tasks/deleteTask/${id}`, 'DELETE');
 };
 
 // Payment handling
-export const processPayment = async (paymentData) => {
-    return await apiRequest('/payments', 'POST', paymentData);
+export const createPayment = async (paymentData) => {
+    return await apiRequest('/payment/createPayment', 'POST', paymentData);
 };
 
-// Export other utility functions as needed
+export const getPayment = async (id) => {
+    return await apiRequest(`/payment/getPayment/${id}`, 'GET');
+};
+
+export const refundPayment = async (paymentData) => {
+    return await apiRequest('/payment/refundPayment', 'POST', paymentData);
+};
+
 export default {
     registerUser,
-    loginUser,
+    getUser,
+    deleteUser,
     postTask,
-    getNearbyWorkers,
-    getTasks,
-    processPayment,
+    getTask,
+    deleteTask,
+    createPayment,
+    getPayment,
+    refundPayment,
 };
