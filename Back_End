@@ -1,0 +1,129 @@
+import ballerina/http;
+import ballerina/log;
+import ballerina/email;
+import ballerina/uuid;
+import ballerina/config;
+import ballerina/json;
+import ballerina/sql;
+import ballerina/mysql;
+
+// This is a comprehensive Ballerina service that combines all backend functionality
+// for the Worknest application.
+
+// Configurable record for SMTP server settings.
+// These values must be provided in a `Config.toml` file.
+configurable record {
+    string smtpHost = "smtp.your-email-provider.com";
+    int smtpPort = 587;
+    string smtpUsername = "your-email@example.com";
+    string smtpPassword = "your-app-password";
+} EmailConfig;
+
+// Configurable record for MySQL database settings.
+// You must set up a database and provide these values in `Config.toml`.
+configurable record {
+    string host = "localhost";
+    int port = 3306;
+    string user = "root";
+    string password = "your-db-password";
+    string database = "worknest_db";
+} DatabaseConfig;
+
+// Initialize the SMTP client for sending emails.
+final email:SmtpClient smtpClient = new ({
+    host: EmailConfig.smtpHost,
+    port: EmailConfig.smtpPort,
+    username: EmailConfig.smtpUsername,
+    password: EmailConfig.smtpPassword,
+    secureSocket: {
+        enable: true
+    }
+});
+
+// Initialize the MySQL database client.
+final mysql:Client dbClient = check new mysql:Client({
+    host: DatabaseConfig.host,
+    port: DatabaseConfig.port,
+    user: DatabaseConfig.user,
+    password: DatabaseConfig.password,
+    database: DatabaseConfig.database
+});
+
+// The main HTTP service that handles all endpoints for the Worknest application.
+// It listens on port 9090.
+service /worknest on new http:Listener(9090) {
+
+    // A resource to handle user sign-up.
+    resource function post signup(@http:Payload json payload) returns json|http:Error {
+        
+        log:printInfo("Received a new sign-up request.");
+
+        string? fullName = payload?.fullName?.toString();
+        string? email = payload?.email?.toString();
+        string? password = payload?.password?.toString();
+
+        if (fullName is () || email is () || password is ()) {
+            return http:createBadRequestError({ "message": "Invalid request payload. Please provide full name, email, and password." });
+        }
+
+        string query = "INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)";
+        
+        sql:ExecutionResult|sql:Error result = dbClient->execute(query, fullName, email, password);
+
+        if (result is sql:Error) {
+            log:printError("Error saving user to database: " + result.message);
+            return http:createInternalServerError({ "message": "Failed to register user. Please try again." });
+        }
+
+        log:printInfo("Successfully signed up user: " + email);
+
+        return {
+            "status": "success",
+            "message": "User signed up successfully!",
+            "userId": uuid:createType1AsString()
+        };
+    }
+
+    // A resource to send an email.
+    resource function post sendEmail(@http:Payload json payload) returns json|http:Error {
+        log:printInfo("Received a request to send an email.");
+        string? to = payload?.to?.toString();
+        string? subject = payload?.subject?.toString();
+        string? body = payload?.body?.toString();
+        
+        if (to is () || subject is () || body is ()) {
+            return http:createBadRequestError({ "message": "Missing 'to', 'subject', or 'body' in the payload." });
+        }
+
+        email:Message message = {
+            from: EmailConfig.smtpUsername,
+            to: [to],
+            subject: subject,
+            body: body
+        };
+
+        check smtpClient->send(message);
+
+        log:printInfo("Email sent successfully to: " + to);
+        return { "status": "success", "message": "Email sent successfully." };
+    }
+
+    // A resource to provide dashboard quotes.
+    resource function get quotes() returns json {
+        log:printInfo("Request received for dashboard quotes.");
+        
+        json quotesArray = [
+            { "quote": "The only way to do great work is to love what you do.", "author": "Steve Jobs" },
+            { "quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.", "author": "Winston Churchill" },
+            { "quote": "The best time to plant a tree was 20 years ago. The second best time is now.", "author": "Chinese Proverb" },
+            { "quote": "Don't watch the clock; do what it does. Keep going.", "author": "Sam Levenson" }
+        ];
+
+        return quotesArray;
+    }
+
+    // A simple GET resource for a health check.
+    resource function get status() returns json {
+        return { "status": "ok", "message": "Worknest backend is running!" };
+    }
+}
