@@ -1,15 +1,19 @@
+import ballerina/log;
 import ballerinax/mysql;
 
-configurable string dbHost = ?;
-configurable int dbPort = ?;
-configurable string dbUser = ?;
-configurable string dbPassword = ?;
-configurable string dbName = ?;
+public class DBUtil {
+    mysql:Client dbClient;
 
-// MySQL client
-mysql:Client db = check new (host = dbHost,
-    port = dbPort,
-    name = dbName,
-    username = dbUser,
-    password = dbPassword,
-    connectionPool = { maxOpenConnections: 5 });
+    // Constructor
+    isolated function init() {
+        self.dbClient = checkpanic new mysql:Client(
+            "localhost",
+            "3306",
+            "household_db",
+            "root",
+            "",
+            // No additional options needed here
+        );
+        log:printInfo("✅ Database connected successfully!");
+    }
+}

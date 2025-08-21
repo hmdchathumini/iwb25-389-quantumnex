@@ -1,143 +1,66 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  Snackbar,
-  Alert
-} from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+  Box, Paper, Typography, TextField, Button, Stack, Snackbar, Alert
+} from '@mui/material';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { createJob } from '../../api/client';
 
-const PostTaskTab = ({ setTasks }) => {
-  const [task, setTask] = useState({
-    title: "",
-    description: "",
-    budget: "",
-    date: ""
-  });
+const USER_ID = 1;
 
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-
+export default function PostTaskTab({ onPosted }) {
+  const [task, setTask] = useState({ title: '', description: '', budget: '', date: '' });
+  const [snack, setSnack] = useState({ open: false, msg: '', sev: 'success' });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTask({ ...task, [name]: value });
+    setTask(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePostTask = () => {
+  const handlePostTask = async () => {
     if (!task.title || !task.description || !task.budget || !task.date) {
-      setSnackbar({ open: true, message: "Please fill all fields!", severity: "error" });
+      setSnack({ open: true, msg: 'Please fill all fields', sev: 'error' });
       return;
     }
-
-    // Add to local state immediately
-    setTasks(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        title: task.title,
-        price: Number(task.budget),
-        status: "Pending",
-      }
-    ]);
-
-    // Optionally, also send to backend
-    fetch('http://localhost:8080/tasks/createTask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: task.title,
-        description: task.description,
-        budget: task.budget,
-        date: task.date
-      })
-    })
-    .then(res => res.text())
-    .then(data => {
-      setSnackbar({ open: true, message: "Task posted successfully!", severity: "success" });
-      setTask({ title: "", description: "", budget: "", date: "" });
-    })
-    .catch(err => {
-      setSnackbar({ open: true, message: "Failed to post task!", severity: "error" });
-    });
+    try {
+      await createJob({
+        customer_id: USER_ID,
+        description: `${task.title} - ${task.description}`,
+      });
+      setSnack({ open: true, msg: 'Task posted!', sev: 'success' });
+      setTask({ title: '', description: '', budget: '', date: '' });
+      if (onPosted) onPosted();
+    } catch (err) {
+      setSnack({ open: true, msg: err.message || 'Failed to post', sev: 'error' });
+    }
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, p: 2 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3, bgcolor: "#f9f9f9" }}>
-        <Typography variant="h5" gutterBottom color="primary">
-          Post a New Task
-        </Typography>
-        <Stack spacing={3}>
-          <TextField
-            label="Task Title"
-            name="title"
-            value={task.title}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Task Description"
-            name="description"
-            value={task.description}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            rows={4}
-            required
-          />
-          <TextField
-            label="Budget (Rs.)"
-            name="budget"
-            value={task.budget}
-            onChange={handleChange}
-            type="number"
-            fullWidth
-            required
-          />
+    <Box sx={{ maxWidth: 700, mx: 'auto', mt: 4, p: 2 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Typography variant="h5" gutterBottom color="primary">Post a New Task</Typography>
+        <Stack spacing={2}>
+          <TextField label="Task Title" name="title" value={task.title} onChange={handleChange} fullWidth />
+          <TextField label="Task Description" name="description" value={task.description} onChange={handleChange} fullWidth multiline rows={4} />
+          <TextField label="Budget (Rs.)" name="budget" value={task.budget} onChange={handleChange} type="number" fullWidth />
           <TextField
             label="Task Date"
             name="date"
             type="date"
             value={task.date}
             onChange={handleChange}
-            fullWidth
-            required
             InputLabelProps={{ shrink: true }}
-            InputProps={{
-              startAdornment: <CalendarTodayIcon sx={{ mr: 1 }} />
-            }}
+            InputProps={{ startAdornment: <CalendarTodayIcon sx={{ mr: 1 }} /> }}
+            fullWidth
           />
           <Stack direction="row" spacing={2}>
-            <Button variant="contained" color="primary" fullWidth onClick={handlePostTask}>
-              Post Task
-            </Button>
-            <Button variant="outlined" fullWidth onClick={() => setTask({ title: "", description: "", budget: "", date: "" })}>
-              Reset
-            </Button>
+            <Button variant="contained" color="primary" fullWidth onClick={handlePostTask}>Post Task</Button>
+            <Button variant="outlined" fullWidth onClick={() => setTask({ title: '', description: '', budget: '', date: '' })}>Reset</Button>
           </Stack>
         </Stack>
       </Paper>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
+      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.sev} sx={{ width: '100%' }}>{snack.msg}</Alert>
       </Snackbar>
     </Box>
   );
-};
-
-export default PostTaskTab;
+}
