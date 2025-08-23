@@ -6,9 +6,9 @@ service /workers on new http:Listener(8080) {
 
     resource function post add(http:Caller caller, http:Request req) returns error? {
         json payload = check req.getJsonPayload();
-        string name = <string>payload.name;
-        string skill = <string>payload.skill;
-        string phone = <string>payload.phone;
+        string name = check payload.name.ensureType(string);
+        string skill = check payload.skill.ensureType(string);
+        string phone = check payload.phone.ensureType(string);
 
         sql:ParameterizedQuery insertQuery = `INSERT INTO workers (name, skill, phone) 
                                               VALUES (${name}, ${skill}, ${phone})`;
