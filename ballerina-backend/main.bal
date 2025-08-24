@@ -1,15 +1,13 @@
-import ballerina/http;
+import ballerina/io;
 
-// Import services as modules
-import user_service;
-import worker_service;
-import payment_service;
-import analytics_service;
+configurable string dbHost = ?;
+configurable int dbPort = ?;
+configurable string dbUser = ?;
+configurable string dbPassword = ?;
+configurable string dbName = ?;
 
-listener http:Listener httpListener = new (8080);
-
-// Attach all services to the listener using service objects
-service /user on httpListener = new user_service:UserService();
-service /worker on httpListener = new worker_service:WorkerService();
-service /job on httpListener = new job_service:JobService();
-service /analytics on httpListener = new analytics_service:AnalyticsService();
+public function main() {
+    io:println("DB Host: " + dbHost);
+    io:println("DB Port: " + dbPort.toString());
+    io:println("DB User: " + dbUser);
+}
