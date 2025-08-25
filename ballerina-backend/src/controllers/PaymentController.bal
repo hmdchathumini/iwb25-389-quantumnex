@@ -1,11 +1,14 @@
-import ../db/DBUtil as dbModule;
+import ballerinax/mysql;
 import ballerina/sql;
+
+// Update the following import to match your actual DB utility module path, for example:
+import ballerina-backend.dbutil as dbModule;
 
 // Record a payment
 public function recordPayment(int jobId, decimal amount, string status) returns error? {
-    sql:ParameterizedQuery insertQuery = `INSERT INTO payments (job_id, amount, status) VALUES (${jobId}, ${amount}, ${status})`;
+    mysql:ParameterizedQuery insertQuery = `INSERT INTO payments (job_id, amount, status) VALUES (${jobId}, ${amount}, ${status})`;
     var result = dbModule:db->execute(insertQuery);
-    if result is sql:ExecutionResult {
+    if result is sql:UpdateResult {
         return;
     } else {
         return error("Failed to record payment: " + result.toString());
