@@ -73,7 +73,7 @@ int notificationIdSeq = 1;
 // DB client
 mysql:Client dbClient;
 
-public function init() returns error? {
+function init() returns error? {
     dbClient = check new (host = databaseHost,
         port = databasePort,
         user = databaseUser,
@@ -177,6 +177,6 @@ service /api on new http:Listener(8080) {
 public function main() returns error? {
     // Simple DB health check
     sql:ParameterizedQuery query = `SELECT 1`;
-    stream<record {| anydata...; |}, error> rs = check dbClient->query(query);
+    stream<record {| anydata...; |}, sql:Error?> rs = dbClient->query(query);
     check rs.close();
 }

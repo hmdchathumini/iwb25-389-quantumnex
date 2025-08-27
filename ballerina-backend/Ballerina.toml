@@ -11,3 +11,13 @@ observabilityIncluded = true
 org = "ballerina"
 name = "mysql"
 version = "3.4.0"
+
+[platform]
+target = "java8"
+
+[[platform.libraries]]
+artifactId = "mysql-connector-j"
+version = "9.4.0"
+path = "./libs/mysql-connector-j-9.4.0.jar"
+groupId = "mysql"
+
