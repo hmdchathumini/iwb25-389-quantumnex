@@ -10,6 +10,7 @@ const USER_ID = 1;
 export default function PostTaskTab({ onPosted }) {
   const [task, setTask] = useState({ title: '', description: '', budget: '', date: '' });
   const [snack, setSnack] = useState({ open: false, msg: '', sev: 'success' });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTask(prev => ({ ...prev, [name]: value }));
@@ -20,14 +21,19 @@ export default function PostTaskTab({ onPosted }) {
       setSnack({ open: true, msg: 'Please fill all fields', sev: 'error' });
       return;
     }
+
+    const newTask = {
+      id: Date.now(), // temporary id for UI
+      description: `${task.title} - ${task.description}`,
+      status: 'Pending'
+    };
+
     try {
-      await createJob({
-        customer_id: USER_ID,
-        description: `${task.title} - ${task.description}`,
-      });
+      await createJob({ customer_id: USER_ID, description: newTask.description });
       setSnack({ open: true, msg: 'Task posted!', sev: 'success' });
       setTask({ title: '', description: '', budget: '', date: '' });
-      if (onPosted) onPosted();
+
+      if (onPosted) onPosted(newTask); // send new task to parent
     } catch (err) {
       setSnack({ open: true, msg: err.message || 'Failed to post', sev: 'error' });
     }
@@ -58,8 +64,15 @@ export default function PostTaskTab({ onPosted }) {
         </Stack>
       </Paper>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-        <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.sev} sx={{ width: '100%' }}>{snack.msg}</Alert>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack({ ...snack, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.sev} sx={{ width: '100%' }}>
+          {snack.msg}
+        </Alert>
       </Snackbar>
     </Box>
   );

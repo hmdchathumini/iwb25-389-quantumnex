@@ -10,9 +10,11 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 
 const tabConfig = {
     customer: [
-        { key: 'postTask', label: 'Post a Task', icon: <AssignmentIcon /> },
+        { key: 'overview', label: 'Overview', icon: <BarChartIcon /> },
+        { key: 'profile', label: 'User Profile', icon: <AssignmentIcon /> },
         { key: 'taskList', label: 'My Tasks', icon: <ListAltIcon /> },
         { key: 'mapView', label: 'Map View', icon: <MapIcon /> },
+        { key: 'notifications', label: 'Notifications', icon: <FeedIcon /> }, // Add this line
     ],
     worker: [
         { key: 'taskfeed', label: 'Available Tasks', icon: <FeedIcon /> },
