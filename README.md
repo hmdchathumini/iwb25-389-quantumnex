@@ -42,3 +42,10 @@ WorkNest is a Ballerina-powered web platform that connects customers with worker
 1. Clone the repository:
    ```bash
    git clone https://github.com/hmdchathumini/iwb25-389-quantumnex.git
+2. cd iwb25-389-quantumnex
+3.bal run
+4.npm install
+  npm start
+
+   
+   
