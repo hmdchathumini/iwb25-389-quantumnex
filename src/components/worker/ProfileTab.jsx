@@ -12,17 +12,19 @@ import {
   Alert,
   LinearProgress,
   Divider,
-  Grid
+  Grid,
+  IconButton
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import WorkIcon from "@mui/icons-material/Work";
 import StarIcon from "@mui/icons-material/Star";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 const ProfileTab = () => {
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john@example.com",
+    name: 'Dinithi Dewmini',
+    email: 'dinithi000@gmail.com',
+    nic: "200187654123",
     skills: "Cleaning, Gardening, Cooking",
     location: "Colombo",
     avatar: "",
@@ -43,8 +45,19 @@ const ProfileTab = () => {
     setProfile({ ...profile, [name]: value });
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setProfile((prev) => ({ ...prev, avatar: ev.target.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
-    if (!profile.name || !profile.email || !profile.skills || !profile.location) {
+    if (!profile.name || !profile.email || !profile.nic || !profile.skills || !profile.location) {
       setSnackbar({ open: true, message: "All fields are required!", severity: "error" });
       return;
     }
@@ -60,23 +73,54 @@ const ProfileTab = () => {
 
   const profileCompletion = () => {
     let completed = 0;
-    if (profile.name) completed += 25;
-    if (profile.email) completed += 25;
-    if (profile.skills) completed += 25;
-    if (profile.location) completed += 25;
-    return completed;
+    if (profile.name) completed += 16.6;
+    if (profile.email) completed += 16.6;
+    if (profile.nic) completed += 16.6;
+    if (profile.skills) completed += 16.6;
+    if (profile.location) completed += 16.6;
+    if (profile.avatar) completed += 16.6;
+    return Math.round(completed);
   };
 
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, p: 2 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 3, bgcolor: "#f9f9f9" }}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center" sx={{ mb: 3 }}>
-          <Avatar
-            src={profile.avatar}
-            sx={{ width: 100, height: 100, bgcolor: "primary.main", fontSize: 36 }}
-          >
-            {profile.name[0]}
-          </Avatar>
+          <Box sx={{ position: "relative" }}>
+            <Avatar
+              src={profile.avatar}
+              sx={{ width: 100, height: 100, bgcolor: "primary.main", fontSize: 36 }}
+            >
+              {profile.name[0]}
+            </Avatar>
+            {editing && (
+              <>
+                <input
+                  accept="image/*"
+                  id="avatar-upload"
+                  type="file"
+                  style={{ display: "none" }}
+                  onChange={handleAvatarChange}
+                />
+                <label htmlFor="avatar-upload">
+                  <IconButton
+                    color="primary"
+                    component="span"
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      right: 0,
+                      bgcolor: "white",
+                      boxShadow: 1,
+                      "&:hover": { bgcolor: "grey.100" }
+                    }}
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+              </>
+            )}
+          </Box>
           <Box sx={{ flex: 1 }}>
             <Typography variant="h5" sx={{ fontWeight: 700 }}>
               {profile.name}
@@ -84,7 +128,9 @@ const ProfileTab = () => {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               {profile.email}
             </Typography>
-
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              {profile.nic && <>NIC: {profile.nic}</>}
+            </Typography>
             <LinearProgress
               variant="determinate"
               value={profileCompletion()}
@@ -119,6 +165,14 @@ const ProfileTab = () => {
               value={profile.email}
               onChange={handleChange}
               fullWidth
+            />
+            <TextField
+              label="NIC Number"
+              name="nic"
+              value={profile.nic}
+              onChange={handleChange}
+              fullWidth
+              helperText="Enter your National Identity Card number"
             />
             <TextField
               label="Skills"
@@ -168,6 +222,14 @@ const ProfileTab = () => {
                     <LocationOnIcon color="action" />
                     <Typography>{profile.location}</Typography>
                   </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    NIC Number
+                  </Typography>
+                  <Typography>{profile.nic || "-"}</Typography>
                 </Stack>
               </Grid>
               <Grid item xs={12} sm={6}>

@@ -115,7 +115,7 @@ return (
     <ThemeProvider theme={theme}>
         <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: "background.default", minHeight: "100vh" }}>
             <Typography variant="h4" gutterBottom color="primary" sx={{ fontWeight: 700 }}>
-                Household Work Dashboard
+                Available Tasks
             </Typography>
 
             {/* Filters */}

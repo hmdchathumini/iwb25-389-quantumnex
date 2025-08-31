@@ -185,8 +185,8 @@ function Login({ setUserName }) {
     e.preventDefault();
     setUserName("John P.");
     // Redirect based on role
-    if (role === "admin") navigate("/admin-dashboard");
-    else if (role === "worker") navigate("/worker-dashboard");
+    if (role === "worker") navigate("/worker-dashboard");
+    else if (role === "admin") navigate("/admin-dashboard");
     else navigate("/customer-dashboard");
   };
   return (
@@ -203,9 +203,9 @@ function Login({ setUserName }) {
             </div>
             <div>
               <select value={role} onChange={e => setRole(e.target.value)} className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                <option value="admin">Admin</option>
                 <option value="worker">Worker</option>
                 <option value="customer">Customer</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
             <button type="submit" className="btn btn-primary w-full">Log In</button>
@@ -232,8 +232,7 @@ function SignUp({ setUserName }) {
     setMessage("Sign up successful! Redirecting...");
     setIsSuccess(true);
     setTimeout(() => {
-      if (role === "admin") navigate("/admin-dashboard");
-      else if (role === "worker") navigate("/worker-dashboard");
+      if (role === "worker") navigate("/worker-dashboard");
       else navigate("/customer-dashboard");
     }, 1000);
   };
@@ -255,9 +254,9 @@ function SignUp({ setUserName }) {
             </div>
             <div>
               <select value={role} onChange={e => setRole(e.target.value)} className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                <option value="admin">Admin</option>
                 <option value="worker">Worker</option>
                 <option value="customer">Customer</option>
+                {/* No admin option for sign up */}
               </select>
             </div>
             <button type="submit" className="btn btn-primary w-full">Sign Up</button>
@@ -433,9 +432,10 @@ function HonestReview() {
 // --- App ---
 function App() {
   const [userName, setUserName] = useState(null);
+  const location = useLocation();
 
   return (
-    <Router>
+    <>
       <style>{commonStyles}</style>
       <Navbar userName={userName} />
       <Routes>
@@ -450,9 +450,18 @@ function App() {
         <Route path="/honest-review" element={<HonestReview />} />
         <Route path="*" element={<div className="p-8 text-center">Page Not Found</div>} />
       </Routes>
-      <Footer />
+      {location.pathname === "/" && <Footer />}
+    </>
+  );
+}
+
+// Wrap App with Router and export
+function AppWithRouter() {
+  return (
+    <Router>
+      <App />
     </Router>
   );
 }
 
-export default App;
+export default AppWithRouter;

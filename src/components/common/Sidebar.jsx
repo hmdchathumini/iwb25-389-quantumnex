@@ -1,4 +1,4 @@
-import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Box, Avatar, Divider } from '@mui/material';
+import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Box, Avatar, Divider, Button } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import MapIcon from '@mui/icons-material/Map';
@@ -7,31 +7,46 @@ import PersonIcon from '@mui/icons-material/Person';
 import GroupIcon from '@mui/icons-material/Group';
 import PaymentIcon from '@mui/icons-material/Payment';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const tabConfig = {
     customer: [
         { key: 'overview', label: 'Overview', icon: <BarChartIcon /> },
-        { key: 'profile', label: 'User Profile', icon: <AssignmentIcon /> },
+        
         { key: 'taskList', label: 'My Tasks', icon: <ListAltIcon /> },
-        { key: 'mapView', label: 'Map View', icon: <MapIcon /> },
-        { key: 'notifications', label: 'Notifications', icon: <FeedIcon /> }, // Add this line
+        { key: 'notifications', label: 'Notifications', icon: <FeedIcon /> },
+        { key: 'profile', label: 'User Profile', icon: <AssignmentIcon /> },
     ],
     worker: [
         { key: 'taskfeed', label: 'Available Tasks', icon: <FeedIcon /> },
+        
+        { key: 'mytasks', label: 'My Tasks', icon: <ListAltIcon /> },
+        { key: 'mapView', label: 'Map View', icon: <MapIcon /> },
+        { key: 'notifications', label: 'Notifications', icon: <FeedIcon /> },
         { key: 'profile', label: 'Profile', icon: <PersonIcon /> },
-        { key: 'mytasks', label: 'My Tasks', icon: <ListAltIcon /> }, // Add this if needed
     ],
     admin: [
         { key: 'users', label: 'Manage Users', icon: <GroupIcon /> },
         { key: 'tasks', label: 'Manage Tasks', icon: <ListAltIcon /> },
         { key: 'payments', label: 'Manage Payments', icon: <PaymentIcon /> },
         { key: 'analytics', label: 'Analytics', icon: <BarChartIcon /> },
+        { key: 'profile', label: 'Profile', icon: <PersonIcon /> },
+
     ],
 };
 
-const Sidebar = ({ type, activeTab, setActiveTab }) => {
+const Sidebar = ({ type, activeTab, setActiveTab, onLogout }) => {
     const tabs = tabConfig[type] || [];
     const drawerWidth = 260;
+
+    const handleLogout = () => {
+        if (onLogout) {
+            onLogout();
+        } else {
+            localStorage.clear();
+            window.location.href = '/'; // Redirect to landing page
+        }
+    };
 
     return (
         <Drawer
@@ -93,7 +108,17 @@ const Sidebar = ({ type, activeTab, setActiveTab }) => {
                     </ListItem>
                 ))}
             </List>
-            <Box sx={{ mt: 'auto', mb: 2, px: 2 }}>
+            <Box sx={{ px: 2, mb: 2 }}>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    fullWidth
+                    startIcon={<LogoutIcon />}
+                    onClick={handleLogout}
+                    sx={{ borderRadius: 2, mb: 1, textTransform: 'none' }}
+                >
+                    Logout
+                </Button>
                 <Typography variant="caption" color="text.secondary" align="center" display="block" sx={{ opacity: 0.8 }}>
                     &copy; {new Date().getFullYear()} WorkNest
                 </Typography>

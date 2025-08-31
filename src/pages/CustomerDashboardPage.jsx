@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CustomerDashboard from '../components/customer/CustomerDashboard';
-import Navbar from '../components/common/Navbar';
+
 import Sidebar from '../components/common/Sidebar';
 
 const CustomerDashboardPage = () => {
@@ -8,7 +8,7 @@ const CustomerDashboardPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Navbar />
+            
             <div className="flex pt-16">
                 <Sidebar type="customer" activeTab={activeTab} setActiveTab={setActiveTab} />
                 <main className="flex-1 p-6 ml-64">
