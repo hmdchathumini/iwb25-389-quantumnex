@@ -27,7 +27,7 @@ WorkNest is a Ballerina-powered web platform that connects customers with worker
 
 - **Backend:** [Ballerina](https://ballerina.io/)  
 - **Frontend:** React.js (or specify your actual frontend if different)  
-- **Database:** (Add the database you’re using, e.g., MySQL, PostgreSQL, MongoDB)  
+- **Database:**  MySQL 
 - **Other Tools:** Git, GitHub  
 
 ---
